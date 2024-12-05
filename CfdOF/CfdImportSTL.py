@@ -28,11 +28,6 @@ import tempfile
 # importer, but supports reading multiple patches
 # in a single STL file
 
-# Python's open is masked by the function below
-if open.__module__ in ['__builtin__','io']:
-    pythonopen = open
-
-
 def open(filename):
     """ Called to open a file """
     docname = os.path.splitext(os.path.basename(filename))[0]
@@ -49,7 +44,7 @@ def insert(filename, doc_name):
         doc = FreeCAD.newDocument(doc_name)
     FreeCAD.ActiveDocument = doc
 
-    with pythonopen(filename) as infile:
+    with open(filename) as infile:
         while True:  # Keep reading solids
             solidline = infile.readline()
             if not solidline:
@@ -60,7 +55,7 @@ def insert(filename, doc_name):
             solidname = solidlinewords[1]
             with tempfile.TemporaryDirectory() as tmpdirname:
                 filename = os.path.normpath(os.path.join(tmpdirname, solidname+'.stl'))
-                with pythonopen(filename, mode='w') as tmp_file:
+                with open(filename, mode='w') as tmp_file:
                     tmp_file.write(solidline)
                     while True:  # Keep reading triangles
                         line = infile.readline()
